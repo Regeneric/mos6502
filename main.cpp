@@ -11,6 +11,13 @@ inline const char* const bts(bool b) {
 	return b ? "true" : "false";
 }
 
+std::string hex(uint32_t n, uint8_t d) {
+	std::string s(d, '0');
+	for(int i = d-1; i >= 0; i--, n >>= 4)
+		s[i] = "0123456789ABCDEF"[n & 0xF];
+	return s;
+};
+
 auto main(void)->int {
 	std::shared_ptr<Cart> cart = std::make_shared<Cart>("nestest.nes");
 	Bus bus;
@@ -81,30 +88,35 @@ auto main(void)->int {
 		txt.setPosition(x+120, y+32);
 		app.draw(txt);
 
+		txt.setString("-");
+		txt.setFillColor(bus.cpu.SR & CPU::UN ? sf::Color::Green : sf::Color::Red);
+		txt.setPosition(x+140, y+32);
+		app.draw(txt);
 
-		txt.setString("PC: $"+std::to_string(bus.cpu.PC));
+
+		txt.setString("PC: $" + hex(bus.cpu.PC, 4));
 		txt.setFillColor(sf::Color::Black);
 		txt.setPosition(x, y+64);
 		app.draw(txt);
 
-		txt.setString("A: $"+std::to_string(bus.cpu.A));
+		txt.setString("A: $" + hex(bus.cpu.A, 2));
 		txt.setFillColor(sf::Color::Black);
-		txt.setPosition(x+80, y+64);
+		txt.setPosition(x+120, y+64);
 		app.draw(txt);
 
-		txt.setString("X: $"+std::to_string(bus.cpu.X));
-		txt.setFillColor(sf::Color::Black);
-		txt.setPosition(x+160, y+64);
-		app.draw(txt);
-
-		txt.setString("Y: $"+std::to_string(bus.cpu.Y));
+		txt.setString("X: $" + hex(bus.cpu.X, 2));
 		txt.setFillColor(sf::Color::Black);
 		txt.setPosition(x+240, y+64);
 		app.draw(txt);
 
-		txt.setString("SP: $"+std::to_string(bus.cpu.SP));
+		txt.setString("Y: $" + hex(bus.cpu.Y, 2));
 		txt.setFillColor(sf::Color::Black);
-		txt.setPosition(x+320, y+64);
+		txt.setPosition(x+360, y+64);
+		app.draw(txt);
+
+		txt.setString("SP: $" + hex(bus.cpu.SP, 4));
+		txt.setFillColor(sf::Color::Black);
+		txt.setPosition(x+480, y+64);
 		app.draw(txt);
 
 		app.display();
