@@ -69,9 +69,16 @@ PPU::PPU(){
 	palScreen[0x3E] = sf::Color(0, 0, 0);
 	palScreen[0x3F] = sf::Color(0, 0, 0);
 
+	// texture.create(W, H);
 }
-PPU::~PPU(){}
+PPU::~PPU(){
+	// delete [] pixels;
+}
 
+std::vector<sf::Vertex> &PPU::screen() {return sprScreen;}
+// std::vector<sf::RectangleShape> &PPU::screen() {return sprScreen;}
+sf::Sprite &PPU::nameTable(Byte i) {return sprNameTable[i];}
+sf::Sprite &PPU::patternTable(Byte i) {return sprPatternTable[i];}
 
 void PPU::cpuWrite(Word address, Byte data) {
     switch(address) {
@@ -121,6 +128,12 @@ void PPU::connectCart(const std::shared_ptr<Cart> &_cart) {
 }
 
 void PPU::clock() {
+	int randomPixel = rand() % 2 ? 0x3F : 0x30;
+	sprScreen.push_back(sf::Vertex(sf::Vector2f(cycle, scanLine <= -1 ? 0 : (scanLine+1)), palScreen[randomPixel]));
+	sprScreen.push_back(sf::Vertex(sf::Vector2f(cycle, scanLine <= -1 ? 0 : scanLine), palScreen[randomPixel]));
+	sprScreen.push_back(sf::Vertex(sf::Vector2f((cycle+1), scanLine <= -1 ? 0 : (scanLine+1)), palScreen[randomPixel]));
+	sprScreen.push_back(sf::Vertex(sf::Vector2f((cycle+1), scanLine <= -1 ? 0 : scanLine), palScreen[randomPixel]));
+
     // Image generation for PAL systems
     cycle++;
     if(cycle >= 341) {
@@ -131,5 +144,5 @@ void PPU::clock() {
             scanLine = -1;
             frameComplete = true;
         }
-    }
+    } return;
 }
